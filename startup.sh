@@ -11,7 +11,9 @@ PID1=$!
 sleep 5
 
 echo "Starting RPLIDAR..."
-ros2 launch rplidar_ros rplidar_a1_launch.py &
+source /opt/ros/jazzy/setup.bash
+source ~/sllidar_ws/install/setup.bash
+ros2 launch sllidar_ros2 sllidar_c1_launch.py serial_port:=/dev/ttyUSB0 &
 PID2=$!
 sleep 5
 
