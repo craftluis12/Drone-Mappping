@@ -467,6 +467,22 @@ cd ~/drone_ws
 source /opt/ros/jazzy/setup.bash
 colcon build || true
 
+# -------------------------------
+# Lidar Package install
+# -------------------------------
+sudo apt update
+sudo apt install -y git python3-colcon-common-extensions python3-rosdep
+mkdir -p ~/sllidar_ws/src
+cd ~/sllidar_ws/src
+git clone https://github.com/Slamtec/sllidar_ros2.git
+cd ~/sllidar_ws
+source /opt/ros/jazzy/setup.bash
+rosdep update
+rosdep install --from-paths src --ignore-src -r -y
+colcon build --symlink-install
+source /opt/ros/jazzy/setup.bash
+source ~/sllidar_ws/install/setup.bash
+
 echo
 echo "===== Setup Complete ====="
 echo "Open a new terminal or run:"
