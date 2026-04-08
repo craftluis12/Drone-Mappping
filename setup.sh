@@ -3,33 +3,78 @@ set -e
 
 echo "===== ROS 2 Jazzy Drone Mapping Setup ====="
 
+
+
+
 # -------------------------------
-# Step 1: System update + prereqs
+# Step 0: Installing Jazzy
+# -------------------------------
+locale  # check for UTF-8
+
+sudo apt update && sudo apt install locales
+sudo locale-gen en_US en_US.UTF-8
+sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
+
+locale  # verify settings
+
+sudo apt install software-properties-common
+sudo add-apt-repository universe
+
+sudo apt update && sudo apt install curl -y
+export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F'"' '{print $4}')
+curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo ${UBUNTU_CODENAME:-${VERSION_CODENAME}})_all.deb"
+sudo dpkg -i /tmp/ros2-apt-source.deb
+
+sudo apt update
+sudo apt upgrade
+
+sudo apt install ros-jazzy-ros-base
+# DONE----------------------------------
+
+# -------------------------------
+# Installing Prerequisites
+# -------------------------------
+sudo apt update
+sudo apt install -y curl gnupg lsb-release python3-rosdep python3-colcon-common-extensions
+sudo rosdep init || true
+rosdep update
+# DONE----------------------------------
+
+# -------------------------------
+# Adding Sources
+# -------------------------------
+echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc
+echo "export ROS_DOMAIN_ID=7" >> ~/.bashrc
+echo "export ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET" >> ~/.bashrc
+source ~/.bashrc
+# DONE----------------------------------
+
+# -------------------------------
+# Tools and Packages
 # -------------------------------
 sudo apt update
 sudo apt install -y \
-    curl \
-    gnupg \
-    lsb-release \
-    python3-rosdep \
-    python3-colcon-common-extensions \
-    software-properties-common
-
-# -------------------------------
-# Step 2: Add ROS 2 Jazzy source
-# -------------------------------
-sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
-    -o /usr/share/keyrings/ros-archive-keyring.gpg
-
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | \
-sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
-
+  ros-jazzy-rplidar-ros \
+  ros-jazzy-slam-toolbox \
+  ros-jazzy-cartographer \
+  ros-jazzy-cartographer-ros \
+  ros-jazzy-mavros \
+  ros-jazzy-mavros-extras \
+  ros-jazzy-robot-localization \
+  ros-jazzy-nav2-map-server \
+  geographiclib-tools
 sudo apt update
+sudo /opt/ros/jazzy/lib/mavros/install_geographiclib_datasets.sh
+# DONE----------------------------------
+
 
 # -------------------------------
 # Step 3: Install ROS 2 Jazzy
 # -------------------------------
-sudo apt install -y ros-jazzy-ros-base
+mkdir -p ~/cartographer_config
+cd ~/cartographer_config
+
 
 # -------------------------------
 # Step 4: rosdep init/update
