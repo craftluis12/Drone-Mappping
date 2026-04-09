@@ -5,15 +5,17 @@ source /opt/ros/jazzy/setup.bash
 source ~/drone_ws/install/setup.bash
 source ~/ros2_ws/install/setup.bash
 
-echo "Starting MAVROS..."
-ros2 launch mavros apm.launch &
-PID1=$!
-sleep 5
+
 
 echo "Starting RPLIDAR..."
 source /opt/ros/jazzy/setup.bash
 source ~/sllidar_ws/install/setup.bash
 ros2 launch sllidar_ros2 sllidar_c1_launch.py serial_port:=/dev/ttyUSB0 &
+PID1=$!
+sleep 10
+
+echo "Starting MAVROS..."
+ros2 launch mavros apm.launch &
 PID2=$!
 sleep 5
 
