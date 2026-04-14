@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# -------------------------------
 # SSH setup
-# -------------------------------
 sudo apt install -y openssh-server
 sudo systemctl enable ssh
 sudo systemctl start ssh
