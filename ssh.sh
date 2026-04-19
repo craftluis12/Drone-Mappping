@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sed -i 's/\r$//' "$0"
 # SSH setup
 sudo apt install -y openssh-server
 sudo systemctl enable ssh
